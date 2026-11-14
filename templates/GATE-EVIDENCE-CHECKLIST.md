@@ -5,13 +5,23 @@ This checklist mirrors `steering/01-governance-gates.md` item for item. If the t
 ## How to Use
 
 1. Copy into `specifications/{ID}/GATE_CHECKLIST.md`
-2. Delete the track sections that don't apply
+2. Delete the depth sections that don't apply (see "Which section applies")
 3. Mark items `[x]` when the evidence exists, with a link to it
 4. Mark items `[BLOCKED: reason, ETA]` if a dependency prevents completion
 5. A gate **cannot pass** while any required item is incomplete or blocked
 6. **The Human Steward records the decision** at the bottom of each gate. An AI persona may recommend; it may not fill in the decision line.
 
 Review levels referenced below: R1 verifier-only, R2 focused B-Team, R3 full B-Team (`steering/00-welcome.md` §3). Reviews run in an independent context, never self-conducted.
+
+---
+
+## Which section applies
+
+You do not choose one up front. Exploratory work needs no checklist. When work is first proposed for the protected branch, the CI check states the Review Level and the agent proposes a depth with its reason (`steering/01-governance-gates.md`, "Tripwires and depth"). Record it here:
+
+- Tripwire(s) that fired: ______
+- Depth proposed by the agent, and why: ______
+- **Depth confirmed (Human Steward):** ☐ Express ☐ Standard ☐ Enterprise — name, date: ______
 
 ---
 

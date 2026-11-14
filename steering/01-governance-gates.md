@@ -1,7 +1,7 @@
 ---
 inclusion: auto
 name: codifide-governance-gates
-description: Full criteria for Harness gates G0, G1, G2/G3, G4, G5, G6, the G-LOOP, scale-adaptive tracks (Express/Standard/Enterprise), and governance principles. Load when running, preparing, or assessing any gate, or when selecting a track.
+description: Full criteria for Harness gates G0, G1, G2/G3, G4, G5, G6, the G-LOOP, the tripwires that set process depth (Express/Standard/Enterprise), and governance principles. Load when running, preparing, or assessing any gate, or when selecting a track.
 # For non-Kiro tools, load this file on demand when gate work begins.
 ---
 
@@ -13,7 +13,7 @@ Every initiative passes through **six gates**: G0, G1, G2/G3 (one combined desig
 
 **Review requirements** for each gate and track are defined once, in `00-welcome.md` §3. This file does not restate them.
 
-**Intent Contract:** required at G0 for Standard and Enterprise (`templates/INTENT-CONTRACT.md`). Express uses an inline Intent block in the combined G0/G1 note.
+**Intent Contract:** required at G0 for Standard and Enterprise (`templates/INTENT-CONTRACT.md`). Express uses an inline Intent block in the combined G0/G1 note. Which depth applies is computed from what the work touches ("Tripwires and depth" below), not chosen up front.
 
 ## The Gates
 
@@ -221,23 +221,63 @@ G2/G3 is **one gate**. The label is historical (design and architecture used to 
 
 ---
 
-## Scale-Adaptive Tracks
+## Tripwires and depth
 
-At G0 the Human Steward selects a **track** that sizes process depth to the work. Tracks change how much ceremony applies, **never whether evidence is required**.
+**Nobody picks a mode.** A choice made before the work starts gets skipped, and at the start nobody knows what the work will turn into. So work starts light, with no declaration, and process is added only when the work trips a wire. Heavy process on work that cannot hurt anyone is waste; light process on work that can is negligence. Tripwires put the weight where the risk is, at the moment it appears.
 
-| Track | When | Gate path | Evidence still required |
-|-------|------|-----------|-------------------------|
-| **Express** | < 1 week, read-only or additive, no new security surface, no sensitive data/identity/release logic, no compliance impact, architecture already established | Combined G0/G1 note → G4 → human ship decision | Inline Intent block; NFR impact statement; change reviews at their Review Level; G-LOOP; rollback note (how to revert and how to tell it worked) |
-| **Standard** | Normal feature on established architecture | G0 → G1 → G2/G3 → G4 → G5 → G6 | Full gate evidence; Intent Contract |
-| **Enterprise** | Sensitive data, identity, release logic, regulated, irreversible, or high blast radius | G0 → G1 → G2/G3 → G4 → G5 → G6 | Full gate evidence; Intent Contract; domain-expert sign-off (human SME); review levels per `00` §3 |
+"Express", "Standard" and "Enterprise" are the three **depths** of process. Earlier versions called them tracks and had the Human Steward select one at G0. They are now the result of the tripwires, confirmed by the Human Steward.
 
-**Selecting a track:**
-- Recorded in the G0 note with rationale; chosen by the Human Steward.
-- When in doubt, go up a track.
-- Anything touching sensitive data, identity, or release logic is Enterprise.
-- Work can be **promoted mid-flight**. If Express work turns out to touch a security surface, it stops and re-enters as Standard or Enterprise.
+### Before any tripwire: just work
 
-**What never changes across tracks:** G-LOOP runs; evidence over confidence; the Human Steward makes the go/kill/hold decision.
+Exploring, prototyping, trying an approach on synthetic data, on a branch nobody depends on: no gate, no gate review, no note. Say in a line what you are trying. Failing fast is a result; stopping needs no ceremony.
+
+Three things hold even here: the security non-negotiables (`00` §6), verifier immutability, and HALT.
+
+### The tripwires
+
+| # | Tripwire | Who detects it | What happens |
+|---|---|---|---|
+| 1 | Real sensitive data, a real credential, a production system, spending money or creating cloud resources, or anything irreversible | The agent (a rule, not a script) | Stop and ask the Human Steward before doing it (`00` §6). If the work will handle sensitive data from here on, the depth is Enterprise from this moment |
+| 2 | A write to a verifier, baseline, or anything in `.codifide/immutable-paths` | The write hook, and the CI check | Blocked. It is a separate, human-approved change |
+| 3 | The work is proposed for the protected branch | `check-review-level.sh` in CI | It computes the Review Level from the changed paths and the size of the change, and prints what is owed before merge |
+| 4 | The change touches a sensitive path: the conventional ones (auth, crypto, keys, migrations, production infrastructure) or any path the repository lists in `.codifide/sensitive-paths` | The same CI check | Highest Review Level (R3); Enterprise depth |
+| 5 | The change is large (over 500 lines across more than 5 files) | The same CI check | R3 |
+| 6 | Someone else will depend on the output, or it is to be released | The agent and the Human Steward | The release gates apply (G5, and G6 after) |
+
+`.codifide/sensitive-paths` is how a repository sets its own tripwires: a short, human-owned list of the places where a mistake hurts a person, loses money, or cannot be undone. It is read from the base branch, so the change being judged cannot shorten it. Example: `templates/enforcement/sensitive-paths.example`.
+
+### From tripwire to depth
+
+When tripwire 3 fires, the agent proposes a depth with its reason, in one sentence, and the Human Steward confirms or changes it. The agent proposes; it does not ask the human to classify the work from a table.
+
+| What the tripwires found | Depth | Gate path | Evidence owed |
+|---|---|---|---|
+| Only tests, docs or styles changed (R1) | none | Merge on green checks | The automated checks |
+| A small, additive change on an existing architecture; no sensitive path; not large | **Express** | One short G0/G1 note → G4 → human ship decision | Inline Intent block; NFR impact statement; change reviews at their Review Level; G-LOOP; rollback note |
+| A new feature, new architecture, or a large change | **Standard** | G0 → G1 → G2/G3 → G4 → G5 → G6 | Full gate evidence; Intent Contract |
+| Tripwire 1 or 4: sensitive data, identity, release logic, regulated, irreversible, high blast radius | **Enterprise** | The same six gates | Full gate evidence; Intent Contract; domain-expert sign-off (human SME); review levels per `00` §3 |
+
+- **Depth follows what the work touches now, not what the product may touch later.** A synthetic-data prototype of a product that will one day hold sensitive data has tripped nothing. It reaches Enterprise at the first real record, credential, or release.
+- **Exploration buys no shortcut.** Work done before a tripwire has had no review. When it is first proposed for the protected branch it is reviewed as new code, at the level its paths require, and the gates for its depth are run then. The speed comes from deferring process until it is warranted, never from skipping it for what ships.
+- **Depth only goes up by itself.** Lowering it is the Human Steward's decision. If Express work turns out to touch a security surface, it stops and re-enters at the higher depth.
+- **A human can always raise it.** Path rules are crude: they miss risk that does not show in a file name. The Human Steward, or the agent, can declare a higher depth at any time, with the reason.
+
+### Express at a glance
+
+For a small, safe change to something that already exists.
+
+- **You write** one note, usually under a page: the problem and scope; the Intent block (goal, scope, protected constraints, harm boundary, rollback); the NFR impact, or "no NFR change" and why.
+- **Reviews:** one focused review (R2) of that note and Primum's intent check; each code change gets the Review Level its paths require (`11`).
+- **Not needed:** separate G0 and G1; G2/G3 (the architecture already exists); G5 as a gate (it is a human ship decision with a rollback note); G6; the full Intent Contract; the full NFR document.
+- **Example.** A read-only CSV export of an existing report, in a service already in production: additive, no new data, no new permission. If it turns out to need a new permission or to include a sensitive field, that is tripwire 4: stop and re-enter higher.
+
+### What is enforced and what is not
+
+- **Enforced by script** (when the CI check is a required status check): the Review Level floor from paths, declared sensitive paths, the size rule, and immutable paths.
+- **Not enforced by any script:** tripwires 1 and 6, the choice between Express and Standard, and whether the reviews a level requires were actually run. `Review-Level` in a commit is a declaration. These rest on the agent following this file and on the Human Steward.
+- **Nothing is checked until work is proposed for the protected branch.** That is the design: it is what makes exploration free. It also means a repository with no required status check has no tripwire 3, 4 or 5.
+
+**What never changes:** G-LOOP runs; evidence over confidence; the Human Steward makes the go/kill/hold decision.
 
 ---
 

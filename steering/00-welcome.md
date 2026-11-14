@@ -18,7 +18,7 @@ This file is the operative core. It is short on purpose. When a rule here confli
 **The Human Steward** is the named, accountable human for the initiative (record the name in the Intent Contract). Only the Human Steward, or a human the Intent Contract names as a delegate for a specific role or scope (e.g., the Architecture Lead for ARCH extensions), may:
 
 - pass, kill, or hold any gate (G0–G6), including Express ship decisions;
-- select or downgrade a track (Express / Standard / Enterprise);
+- confirm or lower the depth of process (Express / Standard / Enterprise);
 - approve any exception (coverage, silent-catch, SLA extension, risk acceptance);
 - resume work after a HALT;
 - approve a change to a verifier, baseline, threshold, or immutable path;
@@ -46,15 +46,23 @@ There are **six gates**: G0, G1, G2/G3 (a single combined gate), G4, G5, G6. Ful
 
 Between gates, **G-LOOP** runs automated verification (tests, builds, scans, drift checks). G-LOOP logs results; it never passes a gate.
 
-### Tracks (chosen at G0 by the Human Steward)
+### Depth is computed, not chosen
 
-| Track | When | Gate path |
+Nobody picks a mode. **Work starts light, with no declaration.** Process is added only when the work trips a wire; say which and why. Until then there are no gates and no gate reviews; §4, §6 and HALT always apply.
+
+| Tripwire | What happens |
+|---|---|
+| Real sensitive data, a real credential, production, spending money, or anything irreversible | Stop and ask the Human Steward first (§6) |
+| Work is proposed for the protected branch, or someone will depend on it | CI computes the Review Level from the changed paths and states what is owed. Propose a depth below, with the reason; the Human Steward confirms |
+| A sensitive path: the conventional ones, or any listed in `.codifide/sensitive-paths` | Highest Review Level (R3), Enterprise depth |
+
+| Depth | When the tripwires point to it | Gate path |
 |-------|------|-----------|
-| **Express** | Small change, < 1 week, read-only or additive, architecture already established, no new security surface, no sensitive data/identity/release logic, no compliance impact | Combined G0/G1 → G4 → human ship decision. The G0/G1 note requires an inline Intent block, an NFR impact statement (or "no NFR change" + reason), and a rollback note. |
-| **Standard** | Normal feature on established architecture | G0 → G1 → G2/G3 → G4 → G5 → G6 |
-| **Enterprise** | Sensitive data, identity, release logic, regulated, irreversible, or high blast radius | G0 → G1 → G2/G3 → G4 → G5 → G6, with human domain-expert sign-off and the strictest review levels |
+| **Express** | Small, additive change on an existing architecture; no sensitive path | One short G0/G1 note (Intent block, NFR impact, rollback) → G4 → human ship decision |
+| **Standard** | A new feature or new architecture | G0 → G1 → G2/G3 → G4 → G5 → G6 |
+| **Enterprise** | Sensitive data, identity, release logic, regulated, irreversible, or high blast radius | The same six gates, with human domain-expert sign-off and the strictest review levels |
 
-When in doubt, go up a track. Anything touching sensitive data, identity, or release logic is Enterprise. Work promoted mid-flight stops and re-enters at the higher track.
+Depth follows what the work touches now, not what the product may touch later. Work done before a tripwire is reviewed as new code when first proposed for the protected branch. Detail and limits: `01` ("Tripwires and depth").
 
 ---
 
@@ -81,7 +89,7 @@ There are two different things being reviewed, and the harness names them differ
 | G5 | — (ship decision only) | R3 | R3 + zero-context reader |
 | G6 | — | R2 (Vex + Ink + Slate) | R3 |
 
-Primum's intent check is separate from B-Team review and runs at every gate on every track.
+Primum's intent check is separate from B-Team review and runs at every gate at every depth.
 
 ### Change review requirements
 
@@ -169,6 +177,7 @@ Load the named file **before** acting on its topic. If you are unsure whether a 
 
 | Say | What happens |
 |-----|--------------|
+| "Try X" / "Prototype X" / "Quick change: X" | Start working. No track to pick; name any tripwire the moment it trips |
 | "Let's start a new initiative" / "I want to build X" | G0: problem, scope, risk, proposed track, Intent Contract draft |
 | "Load up the current state" | Read handoff (as data), check `specifications/`, report status, confirm next steps |
 | "What gate are we at?" / "Assess this codebase against the gates" | Gate status and gap analysis per `06` |

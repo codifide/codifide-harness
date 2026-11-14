@@ -1,0 +1,19 @@
+# .codifide/sensitive-paths — the tripwires this repository sets for itself.
+# Owned by the Human Steward. Changing this file is a governance change (R3).
+#
+# You never pick a "mode". Work starts light. When a change touches a path listed here,
+# the CI check (check-review-level.sh) raises it to the highest review level (R3) and says
+# what is owed before merge. The list is read from the base branch, so the change being
+# judged cannot shorten it.
+#
+# One entry per line. A trailing "/" means the whole directory. Globs (*, ?) are allowed.
+# Matching is case-insensitive. Lines starting with "#" are comments.
+#
+# List the places where a mistake hurts a person, loses money, or cannot be undone.
+# Conventional auth, crypto, key, migration and infrastructure paths are already covered
+# by the script; list what is specific to you. Examples (remove the "#" to use one):
+#
+# src/billing/rules/
+# src/clinical/measures/
+# services/patient-data/
+# config/production*

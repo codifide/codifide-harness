@@ -500,6 +500,38 @@ Review-Level: R3' ) >/dev/null 2>&1
 ( cd "$R6" && git checkout -q a2 && $SH "$SRC"/check-review-level.sh main >/dev/null 2>&1 ); pass "review-level: symlink named .claude at R2 is governance (R3 floor)" 1 $?
 ( cd "$R6" && git checkout -q a3 && $SH "$SRC"/check-review-level.sh main >/dev/null 2>&1 ); pass "review-level: symlink named .codifide at R3 passes (control)" 0 $?
 rm -rf "$R6"
+# ---------- declared sensitive paths (.codifide/sensitive-paths): tripwires read from the base branch ----------
+R7="$(mkrepo)"
+( cd "$R7" && mkdir -p .codifide billing/rules src/lib docs && printf '# comment\r\nbilling/\r\n  src/lib/pricing.ts  \r\nclaims/\r\nreports/*.sql\r\n' > .codifide/sensitive-paths \
+  && echo a > billing/rules/r.py && echo b > src/lib/pricing.ts && echo c > src/lib/other.ts && echo d > docs/a.md && git add -A && git commit -qm base ) >/dev/null 2>&1
+dp(){ ( cd "$R7" && $SH "$SRC"/check-review-level.sh main >/dev/null 2>&1 ); pass "declared-sensitive: $1" "$2" $?; }
+dcm(){ ( cd "$R7" && git add -A && git commit -qm "$1" -m "$2" ) >/dev/null 2>&1; }
+dnb(){ ( cd "$R7" && git checkout -qb "$1" main ) >/dev/null 2>&1; }
+dnb d1; echo x >> "$R7/billing/rules/r.py"; dcm b "Generated-By: human
+Review-Level: R2"; dp "human change to a declared directory at R2 fails" 1
+dnb d2; echo x >> "$R7/billing/rules/r.py"; dcm b "Generated-By: human
+Review-Level: R3"; dp "the same change at R3 passes (control)" 0
+dnb d3; mkdir -p "$R7/billing/tests"; echo x > "$R7/billing/tests/r.test.py"; dcm t "Generated-By: human
+Review-Level: R1"; dp "a test file under a declared directory is not R1" 1
+dnb d4; echo x >> "$R7/src/lib/pricing.ts"; dcm p "Generated-By: human
+Review-Level: R2"; dp "a declared single file (CRLF list, padded entry) at R2 fails" 1
+dnb d5; echo x >> "$R7/src/lib/other.ts"; dcm o "Generated-By: human
+Review-Level: R2"; dp "an undeclared neighbour at R2 passes (control)" 0
+dnb d6; mkdir -p "$R7/Claims"; echo x > "$R7/Claims/c.py"; dcm c "Generated-By: human
+Review-Level: R2"; dp "a case variant of a declared directory at R2 fails" 1
+dnb d7; mkdir -p "$R7/reports"; echo x > "$R7/reports/q.sql"; dcm q "Generated-By: human
+Review-Level: R2"; dp "a declared glob at R2 fails" 1
+dnb d8; printf '# emptied\n' > "$R7/.codifide/sensitive-paths"; dcm loosen "Generated-By: human
+Review-Level: R3"; echo x >> "$R7/billing/rules/r.py"; dcm b "Generated-By: human
+Review-Level: R2"; dp "emptying the list in the same PR does not lower the floor (list is read from base)" 1
+( cd "$R7" && git checkout -q d1 && $SH "$SRC"/check-review-level.sh main 2>/dev/null | grep -q 'declared sensitive' ); pass "declared-sensitive: the output names the tripwire that fired" 0 $?
+R8="$(mkrepo)"
+( cd "$R8" && mkdir -p .codifide billing && echo 'billing/' > real-list && ln -s ../real-list .codifide/sensitive-paths && echo a > billing/a.py && git add -A && git commit -qm base \
+  && git checkout -qb s1 && echo x >> billing/a.py && git add -A && git commit -qm b -m "Generated-By: human
+Review-Level: R3" ) >/dev/null 2>&1
+( cd "$R8" && $SH "$SRC"/check-review-level.sh main >/dev/null 2>&1 ); pass "declared-sensitive: a symlink in place of the list is refused (exit 2, fail closed)" 2 $?
+rm -rf "$R7" "$R8"
+
 # I6-F08: the workflow-example check must look for RUN steps, not for words anywhere in the file.
 wf_steps_ok(){ command -v python3 >/dev/null 2>&1 && python3 - "$1" <<'WFPY'
 import re, sys
