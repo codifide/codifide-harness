@@ -25,7 +25,7 @@ You do not choose one up front. Exploratory work needs no checklist. When work i
 
 ---
 
-## Express Track (Combined G0/G1 → G4 → Ship)
+## Express depth (Combined G0/G1 → G4 → Ship)
 
 ### Combined G0/G1 note
 - [ ] Problem, users, scope (in/out)
@@ -50,7 +50,7 @@ You do not choose one up front. Exploratory work needs no checklist. When work i
 
 ---
 
-## Standard and Enterprise Tracks
+## Standard and Enterprise depths
 
 ### G0 — Problem Statement
 - [ ] Business problem statement
@@ -58,11 +58,11 @@ You do not choose one up front. Exploratory work needs no checklist. When work i
 - [ ] Risk classification (sensitive data, identity, release logic)
 - [ ] Stakeholders identified
 - [ ] Scope boundaries (in / out)
-- [ ] Track proposed with rationale
+- [ ] Depth proposed with the tripwire(s) that fired and the reason
 - [ ] Intent Contract drafted (`templates/INTENT-CONTRACT.md`), Human Steward named
 - [ ] Primum intent check against the draft Intent Contract
 - [ ] Gate review: Standard R2 (Vex + Kade + Noor) / Enterprise R3
-- **Decision (Human Steward):** ☐ Go ☐ Kill ☐ Hold — track: ______ — name, date: ______
+- **Decision (Human Steward):** ☐ Go ☐ Kill ☐ Hold — depth: ______ — name, date: ______
 
 ### G1 — Requirements & Evidence
 - [ ] Evidence-backed requirements with acceptance criteria

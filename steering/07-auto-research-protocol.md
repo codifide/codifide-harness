@@ -138,7 +138,7 @@ User: "Take B into G4"
 ```
 User: "Auto-research: candidate permission models for health records with audit trails"
 ```
-Auto-research may **explore and benchmark** candidate designs (e.g., permission-check latency, audit-write throughput). It does not decide the design. "Good design" has no automated verifier, so the permission model is chosen at **G2/G3** by the Human Steward, with R3 review and the Enterprise track. The research output is evidence for that gate.
+Auto-research may **explore and benchmark** candidate designs (e.g., permission-check latency, audit-write throughput). It does not decide the design. "Good design" has no automated verifier, so the permission model is chosen at **G2/G3** by the Human Steward, with R3 review at Enterprise depth. The research output is evidence for that gate.
 
 ---
 

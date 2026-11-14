@@ -80,7 +80,7 @@ full files listed in the On-Demand Index of 00-welcome.md.
 - Rules change between versions. Verify against the current source.
 
 ## Governance
-- Gate decisions, exceptions, and track selection belong to the Human Steward.
+- Gate decisions, exceptions, and the depth of process belong to the Human Steward.
 - A spec does not advance without acceptance criteria and passing tests.
 - Status tracking reflects reality, not aspiration.
 ```

@@ -5,7 +5,7 @@ Versions follow semantic versioning. The version is in `VERSION`. Pin installs t
 ## [Unreleased]
 Not released. Proposed on branch `docs/prototype-track-express-clarity`; needs the Human Steward's decision and an R3 review before it is tagged. This is a rule change and a script change.
 ### Changed
-- **Tracks are no longer chosen up front.** Work starts with no process. Depth (Express, Standard, Enterprise) is the result of tripwires, proposed by the agent with a reason and confirmed by the Human Steward when work is first proposed for the protected branch. `steering/01-governance-gates.md` ("Tripwires and depth") replaces "Scale-Adaptive Tracks"; the core table in `00-welcome.md`, the gate checklist and the README follow.
+- **Tracks are no longer chosen up front.** Work starts with no process. Depth (Express, Standard, Enterprise) is the result of tripwires, proposed by the agent with a reason and confirmed by the Human Steward when work is first proposed for the protected branch. `steering/01-governance-gates.md` ("Tripwires and depth") replaces "Scale-Adaptive Tracks"; the core table in `00-welcome.md`, the gate checklist, the README and the wording in `02`, `04`, `05`, `07`, `11`, `NOTICE.md` and three templates follow.
 - Depth follows what the work touches now, not what the product may touch later. Exploratory work is reviewed as new code when first proposed for the protected branch.
 - `check-review-level.sh` ends its output with the level the whole change needs, the reason, and what is owed before merge.
 ### Added
@@ -15,7 +15,9 @@ Not released. Proposed on branch `docs/prototype-track-express-clarity`; needs t
 ### Verification status
 - Enforcement suite: 256 cases (10 new, for declared sensitive paths), ALL PASS on macOS bash 3.2. The new code has had no independent review; earlier rounds each found bypasses in these scripts, so expect more here.
 - Not enforced by any script: stopping for real data, credentials or production; the choice between Express and Standard; whether a declared review was run. Nothing is checked until work is proposed for the protected branch.
-- `whitepaper.html` and the site copy of the whitepaper are not regenerated. `install.sh` does not install `sensitive-paths` yet: copy the example by hand (the installer suite pins the manifest size, so wiring it in is a separate change).
+- `install.sh` seeds `.codifide/sensitive-paths` from the example (never overwriting an existing one); installer suite 369 checks, ALL PASS.
+- `.github/workflows/tests.yml` (new) runs both suites on pull requests and on pushes to `trunk`. It has not run yet, and `trunk` has no branch protection, so it gates nothing until `tests` is made a required check.
+- `whitepaper.html` carries the new section (edited by hand; there is no generator). The site copy of the whitepaper is not updated.
 
 ## [3.2.1] - 2026-11-12
 A fix to the example CI workflow. The steering files, hook files, installer and the four enforcement scripts are unchanged.

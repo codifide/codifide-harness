@@ -11,7 +11,7 @@ description: Harness mandate for measurable NFRs, KPIs, and benchmarks - require
 
 Every Standard and Enterprise initiative that reaches G1 MUST include measurable targets. If you can't measure it, you can't ship it.
 
-**Express track:** the combined G0/G1 note states the change's NFR impact: which existing NFRs it could affect and how they will be re-verified, or "no NFR change" with a one-line reason.
+**Express depth:** the combined G0/G1 note states the change's NFR impact: which existing NFRs it could affect and how they will be re-verified, or "no NFR change" with a one-line reason.
 
 ---
 

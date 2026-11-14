@@ -9,7 +9,7 @@ description: Harness Review Levels R1, R2, R3 for individual changes (PRs, loop 
 
 A full 12-persona B-Team review on every PR pushes teams back toward batching. This file defines **Review Levels** for individual changes (a PR, a loop's output) so that review depth matches risk.
 
-**Scope:** these levels apply to **changes**. Gate reviews (reviewing a gate's artifacts) are set by track in `00-welcome.md` §3. "Review Level R1–R3" is unrelated to the **Cost Classes C1–C3** in `08-loop-engineering.md`.
+**Scope:** these levels apply to **changes**. Gate reviews (reviewing a gate's artifacts) are set by depth in `00-welcome.md` §3. "Review Level R1–R3" is unrelated to the **Cost Classes C1–C3** in `08-loop-engineering.md`.
 
 ---
 
