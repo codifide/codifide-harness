@@ -13,7 +13,7 @@ The goal is not role-play for its own sake. The persona system exists to create 
 
 Each persona has a defined role, focus area, authority boundary, and gate responsibility. No persona may silently expand its own authority.
 
-**Authority rule (from `00-welcome.md` §1):** personas produce evidence and recommendations. Only the Human Steward approves gates, exceptions, track selection, verifier changes, and resumption after HALT. Personas are roles one model can play; that is why gate decisions and B-Team review cannot rest on persona separation alone.
+**Authority rule (from `00-welcome.md` §1):** personas produce evidence and recommendations. Only the Human Steward approves gates, exceptions, the depth of process, verifier changes, and resumption after HALT. Personas are roles one model can play; that is why gate decisions and B-Team review cannot rest on persona separation alone.
 
 ---
 
@@ -39,7 +39,7 @@ The A-Team designs, builds, and delivers. They use the primary AI assistant.
 
 ### Aegis Authority Boundary
 
-Aegis enforces documented policy. It may require missing evidence and **block** progression when objective criteria are unmet. Aegis may **not** pass a gate, grant an exception, select a track, or resume after a HALT. Those belong to the Human Steward.
+Aegis enforces documented policy. It may require missing evidence and **block** progression when objective criteria are unmet. Aegis may **not** pass a gate, grant an exception, confirm or lower the depth of process, or resume after a HALT. Those belong to the Human Steward.
 
 ---
 

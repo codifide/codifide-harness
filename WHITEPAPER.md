@@ -232,6 +232,22 @@ In healthcare, this is the regulatory auditor asking "why is this the way it is?
 
 ---
 
+## Size the Process to the Risk
+
+The gates exist to protect patients, data and money. They are not a toll every idea pays before anyone finds out whether it works. Full process on work that cannot hurt anyone is waste, and it teaches a team to treat governance as ceremony.
+
+Our first answer was a menu: pick a light, normal or heavy track before you start. It did not work, for a plain reason. A choice made up front gets skipped, and at the start nobody knows what the work will become. So the harness no longer asks anyone to choose.
+
+**Work starts light.** Exploring, prototyping, trying an idea on synthetic data: no gate, no review, no form. This is rapid development with the brakes in the right place. Failing fast is a result.
+
+**Process arrives when the work trips a wire.** Touching real sensitive data or a credential stops the work for a human. Proposing the work for the protected branch runs a check that reads what changed and says what is owed. Touching a path the team has marked sensitive raises it to the highest level. The demand comes with its reason attached, at the moment it matters, and a script raises it so nobody has to remember.
+
+Two rules keep this honest. The depth follows what the work touches now, not what the product may touch one day: a synthetic prototype of a healthcare product has tripped nothing until its first real record. And exploration buys no shortcut: code written before a tripwire is reviewed as new code when it is first proposed for release. The speed comes from deferring process until it is warranted, never from skipping it for what reaches production.
+
+What a script enforces here, and what still depends on a person, is listed in `steering/01-governance-gates.md` under "Tripwires and depth".
+
+---
+
 ## Why This Matters for Healthcare
 
 Healthcare software has a unique constraint: **you cannot move fast and break things when "things" are patient records.**

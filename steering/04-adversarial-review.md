@@ -7,7 +7,7 @@ description: How to prepare, run, and respond to an independent Harness B-Team a
 
 # Adversarial Review Process
 
-**When review is required** is defined once, in `00-welcome.md` §3 (gate reviews by track) and `11-tiered-adversarial-review.md` (change reviews by Review Level). This file defines **how** to run one.
+**When review is required** is defined once, in `00-welcome.md` §3 (gate reviews by depth) and `11-tiered-adversarial-review.md` (change reviews by Review Level). This file defines **how** to run one.
 
 ---
 

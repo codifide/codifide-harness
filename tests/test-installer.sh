@@ -117,7 +117,9 @@ done
 is "host kiro: immutable-paths seeded from the example" cmp -s "$T/.codifide/immutable-paths" "$A/templates/enforcement/immutable-paths.example"
 is "host kiro: workflow seeded" cmp -s "$T/.github/workflows/codifide-enforcement.yml" "$A/templates/enforcement/workflow.example.yml"
 isnot "host kiro: no .claude directory is created" test -e "$T/.claude"
-eq "host kiro: manifest has 22 entries and every hash matches" "22" "$(manifest_ok "$T")"
+is "host kiro: sensitive-paths seeded from the example" cmp -s "$T/.codifide/sensitive-paths" "$A/templates/enforcement/sensitive-paths.example"
+is "manifest: sensitive-paths is marked seed" grep -q ' seed .codifide/sensitive-paths$' "$T/.codifide/harness-manifest"
+eq "host kiro: manifest has 23 entries and every hash matches" "23" "$(manifest_ok "$T")"
 eq "host kiro: version file" "version=3.2.0 pinned=yes source=tag hosts=kiro" "$(tr '\n' ' ' < "$T/.codifide/harness-version" | sed 's/ $//')"
 isnot "host kiro: the manifest does not list its own metadata files" grep -q 'harness-' "$T/.codifide/harness-manifest.body" 2>/dev/null
 isnot "host kiro: no handoff or user file was touched or created" test -e "$T/.kiro/steering/next-session-prompt.md"

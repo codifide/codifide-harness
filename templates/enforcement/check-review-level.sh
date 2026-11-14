@@ -21,6 +21,11 @@
 #   Any other file is at least R2 ("anything not clearly covered -> R2"), which
 #   covers auth/data-access/API changes that live outside conventional folders.
 #   R3 paths, and any non-human change to auth/crypto/permissions paths, are R3.
+#   Paths the repository declares in .codifide/sensitive-paths (optional, human-owned) are R3,
+#   whoever wrote the change and whatever the file is called. The list is read from the BASE
+#   ref, so the change being judged cannot shorten it. One entry per line: a trailing "/" means
+#   the directory, globs (*, ?) are allowed, "#" starts a comment. No list, no extra floors.
+#   The last lines of the output say, in words, what the whole change owes before merge.
 #   NOT computed here (the agent and reviewers apply them and can only RAISE):
 #   rule 2 outside conventional auth/crypto paths, 3 (new architecture),
 #   5 (compliance), 6 (AI-infrastructure dependencies), 7 (behavior outside an
@@ -89,6 +94,26 @@ SENSITIVE_GLOBS=('*/auth/*' '*/authz/*' '*/permissions/*' '*/crypto/*' '*/encryp
                  '*/middleware/*' '*/middleware.*' '*/session*' '*/oauth*' '*/jwt*' '*/password*' '*/login*'
                  '*/rbac/*' '*/acl/*' '*/iam/*' '*/policies/*' '*/security/*')
 
+# Repository-declared sensitive paths: the tripwires a repository sets for itself.
+DECL_REL=".codifide/sensitive-paths"
+DECLARED_GLOBS=()
+if git cat-file -e "$BASE:$DECL_REL" 2>/dev/null; then
+  # A symlink or a directory at that name is not a list: refuse rather than read something else.
+  DECL_MODE="$(git ls-tree "$BASE" -- "$DECL_REL" | awk '{print $1" "$2}')"
+  [[ "$DECL_MODE" == "100644 blob" || "$DECL_MODE" == "100755 blob" ]] || die "$DECL_REL on $BASE is not a regular file (fail closed)"
+  DECL_TEXT="$(git show "$BASE:$DECL_REL")" || die "cannot read $DECL_REL from $BASE"
+  while IFS= read -r _l || [[ -n "$_l" ]]; do
+    _l="${_l%$'\r'}"
+    _l="${_l#"${_l%%[![:space:]]*}"}"; _l="${_l%"${_l##*[![:space:]]}"}"
+    [[ -z "$_l" || "$_l" == \#* ]] && continue
+    _l="${_l#./}"; _l="${_l#/}"
+    [[ -z "$_l" ]] && continue
+    if [[ "$_l" == */ ]]; then DECLARED_GLOBS+=("/${_l}*")
+    else DECLARED_GLOBS+=("/$_l" "/$_l/*"); fi
+  done <<< "$DECL_TEXT"
+  unset _l
+fi
+
 glob_any() { # $1 = path with leading slash; rest = globs
   local p="$1"; shift
   local g rc=1
@@ -122,6 +147,7 @@ fi
 FILELIST="$(mktemp)" || die "mktemp failed"
 trap 'rm -f "$FILELIST"' EXIT
 FAILS=0
+MAXFLOOR=1; MAXWHY="R1 allowlist only"; DECLARED_HIT=0
 while IFS= read -r sha; do
   [[ -z "$sha" ]] && continue
   short="${sha:0:9}"
@@ -161,6 +187,8 @@ while IFS= read -r sha; do
       FLOOR=3; WHY="governance file $f"
     elif glob_any "$p" "${R3_GLOBS[@]}"; then
       FLOOR=3; WHY="R3 path $f"
+    elif (( ${#DECLARED_GLOBS[@]} )) && glob_any "$p" "${DECLARED_GLOBS[@]}"; then
+      FLOOR=3; WHY="$f is a declared sensitive path ($DECL_REL)"; DECLARED_HIT=1
     elif glob_any "$p" "${SENSITIVE_GLOBS[@]}"; then
       # Sensitive paths are never R1, whatever the file name (e.g. src/auth/login.test.ts).
       if [[ "$GEN" != "human" ]]; then FLOOR=3; WHY="non-human (${GEN:-unknown}) change to sensitive path $f"
@@ -170,6 +198,7 @@ while IFS= read -r sha; do
     fi
   done < "$FILELIST"
   if (( SIZE_FLOOR > FLOOR )); then FLOOR=$SIZE_FLOOR; WHY="PR size rule"; fi
+  if (( FLOOR > MAXFLOOR )); then MAXFLOOR=$FLOOR; MAXWHY="$WHY"; fi
 
   # Human-approval markers may only be added by human commits.
   if [[ "$GEN" != "human" ]]; then
@@ -198,6 +227,14 @@ while IFS= read -r sha; do
   fi
 done <<< "$COMMITS"
 
+# What the whole change owes, in words. Computed from what it touches; nobody has to pick a mode.
+echo "Codifide review-level: this change needs R$MAXFLOOR because: $MAXWHY."
+case "$MAXFLOOR" in
+  1) echo "  Owed before merge: the automated checks. No independent review." ;;
+  2) echo "  Owed before merge: one focused independent review (steering/11)." ;;
+  *) echo "  Owed before merge: a full independent review and the Human Steward's decision (steering/11)."
+     (( DECLARED_HIT )) && echo "  It touches a path this repository declared sensitive: the gate evidence in steering/01 is owed as well." ;;
+esac
 if (( FAILS > 0 )); then
   echo "Codifide review-level: FAIL ($FAILS problem(s)). Raise the declared level and run that review, or ask the Human Steward."
   exit 1

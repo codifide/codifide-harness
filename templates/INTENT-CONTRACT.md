@@ -103,7 +103,7 @@ What evidence proves the intended outcome, not merely proxy metrics?
 
 | Actor / Persona | May | May Not |
 |-----------------|-----|---------|
-| Human Steward (named below) | Pass/kill/hold gates; select track; approve exceptions, verifier changes, cloud resources; resume after HALT; change this contract | Delegate these to an AI persona |
+| Human Steward (named below) | Pass/kill/hold gates; confirm or lower the depth of process; approve exceptions, verifier changes, cloud resources; resume after HALT; change this contract | Delegate these to an AI persona |
 | Aegis | Enforce policy; require evidence; block | Pass a gate; grant exceptions; resume after HALT |
 | Primum | HALT (mandatory on boundary violation) and escalate | Redefine intent; waive harm boundaries; resume |
 | Atlas / loops | Run within scope; propose immutable paths | Modify immutable paths; touch security config; exceed budget |

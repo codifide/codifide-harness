@@ -11,7 +11,7 @@
 #     matches VERSION, or an unpacked release tarball with a matching RELEASE file), unless you
 #     pass --i-know-this-is-unpinned, which is recorded in .codifide/harness-version.
 #   - Never uses the network, never commits, never pushes, never changes git configuration.
-#   - Never overwrites a file you own: policy files (.codifide/immutable-paths, allowed-licenses,
+#   - Never overwrites a file you own: policy files (.codifide/immutable-paths, sensitive-paths, allowed-licenses,
 #     the workflow, CLAUDE.md, AGENTS.md, the Copilot file) are created only when absent.
 #     .claude/settings.json is never written; a merge snippet is printed instead.
 #   - Harness-owned files are replaced only while they still match the hash recorded in
@@ -257,6 +257,7 @@ want_common(){ local s
     add_rel owned ".codifide/$s.sh" "templates/enforcement/$s.sh"; done
   add_rel seed ".codifide/immutable-paths" "templates/enforcement/immutable-paths.example"
   add_rel seed ".codifide/allowed-licenses" "templates/enforcement/allowed-licenses.example"
+  add_rel seed ".codifide/sensitive-paths" "templates/enforcement/sensitive-paths.example"
   add_rel seed ".github/workflows/codifide-enforcement.yml" "templates/enforcement/workflow.example.yml"; }
 want_steering(){ # destination directory
   local f b; for f in "$SRC"/steering/[0-9][0-9]-*.md; do
@@ -449,7 +450,7 @@ finish_notes(){
   echo
   echo "Nothing was committed or pushed. Review with git status and git diff, then commit through a normal pull request."
   case "$ALLHOSTS" in *" kiro "*) echo "Kiro: whether the host honours exit code 2 from the guard hook is unverified by us. Run the check in templates/enforcement/README.md.";; esac
-  echo "Next: edit .codifide/immutable-paths and .codifide/allowed-licenses, and set the repository variable CODIFIDE_LICENSE_REPORT_CMD."; }
+  echo "Next: edit .codifide/immutable-paths, .codifide/sensitive-paths and .codifide/allowed-licenses, and set the repository variable CODIFIDE_LICENSE_REPORT_CMD."; }
 
 if [[ "$CMD" == uninstall ]]; then
   [[ $HAVE_MANIFEST -eq 1 ]] || die "nothing to uninstall: no $MANFILE in $T"

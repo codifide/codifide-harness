@@ -5,7 +5,7 @@ This checklist mirrors `steering/01-governance-gates.md` item for item. If the t
 ## How to Use
 
 1. Copy into `specifications/{ID}/GATE_CHECKLIST.md`
-2. Delete the track sections that don't apply
+2. Delete the depth sections that don't apply (see "Which section applies")
 3. Mark items `[x]` when the evidence exists, with a link to it
 4. Mark items `[BLOCKED: reason, ETA]` if a dependency prevents completion
 5. A gate **cannot pass** while any required item is incomplete or blocked
@@ -15,7 +15,17 @@ Review levels referenced below: R1 verifier-only, R2 focused B-Team, R3 full B-T
 
 ---
 
-## Express Track (Combined G0/G1 → G4 → Ship)
+## Which section applies
+
+You do not choose one up front. Exploratory work needs no checklist. When work is first proposed for the protected branch, the CI check states the Review Level and the agent proposes a depth with its reason (`steering/01-governance-gates.md`, "Tripwires and depth"). Record it here:
+
+- Tripwire(s) that fired: ______
+- Depth proposed by the agent, and why: ______
+- **Depth confirmed (Human Steward):** ☐ Express ☐ Standard ☐ Enterprise — name, date: ______
+
+---
+
+## Express depth (Combined G0/G1 → G4 → Ship)
 
 ### Combined G0/G1 note
 - [ ] Problem, users, scope (in/out)
@@ -40,7 +50,7 @@ Review levels referenced below: R1 verifier-only, R2 focused B-Team, R3 full B-T
 
 ---
 
-## Standard and Enterprise Tracks
+## Standard and Enterprise depths
 
 ### G0 — Problem Statement
 - [ ] Business problem statement
@@ -48,11 +58,11 @@ Review levels referenced below: R1 verifier-only, R2 focused B-Team, R3 full B-T
 - [ ] Risk classification (sensitive data, identity, release logic)
 - [ ] Stakeholders identified
 - [ ] Scope boundaries (in / out)
-- [ ] Track proposed with rationale
+- [ ] Depth proposed with the tripwire(s) that fired and the reason
 - [ ] Intent Contract drafted (`templates/INTENT-CONTRACT.md`), Human Steward named
 - [ ] Primum intent check against the draft Intent Contract
 - [ ] Gate review: Standard R2 (Vex + Kade + Noor) / Enterprise R3
-- **Decision (Human Steward):** ☐ Go ☐ Kill ☐ Hold — track: ______ — name, date: ______
+- **Decision (Human Steward):** ☐ Go ☐ Kill ☐ Hold — depth: ______ — name, date: ______
 
 ### G1 — Requirements & Evidence
 - [ ] Evidence-backed requirements with acceptance criteria

@@ -85,7 +85,7 @@ bash NEW-RELEASE/install.sh uninstall --target /path/to/your/repo --apply   # re
 
 Upgrade replaces only files that still match the manifest and stops, writing nothing, if you edited one (`--force` overrides). Then open a normal pull request so your reviewers see the diff. Edit `.codifide/immutable-paths` and `.codifide/allowed-licenses` and set `CODIFIDE_LICENSE_REPORT_CMD` before relying on the checks.
 
-**Verified and not verified.** The installer suite (`tests/test-installer.sh`, 367 installer checks) exercises the installer in throwaway repositories on macOS with bash 3.2. We did not run Kiro, Claude Code, Cursor, Copilot or Codex end to end: that each host loads the files is unverified. The guard hook blocking on exit code 2 was checked once by hand in the Kiro IDE on macOS (2026-11-11) and is unverified in the other hosts (see `templates/enforcement/README.md`). The release workflow ran once on GitHub for 3.2.0: tests, build and checksum passed, the release step failed and the 3.2.0 assets were built locally from the tag (fixed on `trunk` after the tag, not yet re-run). From 3.2.1 the release tag is signed with an SSH key (check the tag's "Verified" badge on GitHub). The release files are not separately signed: `SHA256SUMS` carries no signature.
+**Verified and not verified.** The installer suite (`tests/test-installer.sh`, 369 installer checks) exercises the installer in throwaway repositories on macOS with bash 3.2. We did not run Kiro, Claude Code, Cursor, Copilot or Codex end to end: that each host loads the files is unverified. The guard hook blocking on exit code 2 was checked once by hand in the Kiro IDE on macOS (2026-11-11) and is unverified in the other hosts (see `templates/enforcement/README.md`). The release workflow ran once on GitHub for 3.2.0: tests, build and checksum passed, the release step failed and the 3.2.0 assets were built locally from the tag (fixed on `trunk` after the tag, not yet re-run). From 3.2.1 the release tag is signed with an SSH key (check the tag's "Verified" badge on GitHub). The release files are not separately signed: `SHA256SUMS` carries no signature.
 
 The manual copy steps below still work.
 
@@ -135,7 +135,7 @@ cp codifide-harness/steering/*.md ~/.kiro/steering/
 ```
 steering/
     ├── 00-welcome.md              # THE CORE (always loaded): authority, gates, review levels, loop + security rules, on-demand index
-    ├── 01-governance-gates.md     # Full criteria for the six gates (G0, G1, G2/G3, G4, G5, G6) + tracks
+    ├── 01-governance-gates.md     # Full criteria for the six gates (G0, G1, G2/G3, G4, G5, G6) + the tripwires that set process depth
     ├── 02-personas.md             # A-Team + B-Team + Loop personas
     ├── 03-coding-standards.md     # Coverage, security, accessibility, CI/CD
     ├── 04-adversarial-review.md   # B-Team review protocol + A-Team response format
@@ -308,7 +308,7 @@ What has been done:
 - **Structural validation** of every steering file, template, and hook definition (numbering, references, JSON).
 - **Two adversarial reviews of v2** (one same-vendor, one cross-vendor). Their findings drove v3.
 - **Two cross-vendor closure audits of v3**, each checking every prior finding against quoted v3 text. The first found gaps in the new enforcement scripts; the second confirmed those fixes and found that the harness's own files could be edited at R1, which is now R3.
-- **An automated test suite** for the enforcement scripts (`templates/enforcement/test-enforcement.sh`, 246 cases; the script prints the authoritative result and checks that this number matches): allowed and blocked writes, `..` and symlink and hard-link tricks, case variants, very long and newline paths, self-protection, renames, attempts to loosen the list, scoped approvals, per-commit Review Level floors, merge commits, the size rule (including binaries), provenance, agent-written approval markers, license expressions and base-branch policy, hook and converter files, and documentation consistency. Cases marked "documented limit" pin behaviour we know cannot be fixed in a script.
+- **An automated test suite** for the enforcement scripts (`templates/enforcement/test-enforcement.sh`, 256 cases; the script prints the authoritative result and checks that this number matches): allowed and blocked writes, `..` and symlink and hard-link tricks, case variants, very long and newline paths, self-protection, renames, attempts to loosen the list, scoped approvals, per-commit Review Level floors, merge commits, the size rule (including binaries), provenance, agent-written approval markers, license expressions and base-branch policy, hook and converter files, and documentation consistency. Cases marked "documented limit" pin behaviour we know cannot be fixed in a script.
 - **Two further cross-vendor reviews of the enforcement scripts** (a read-only assessment and a Grok 4.7 cold review). Their findings are what 3.1 fixes, or states as limits.
 
 What has **not** been done: a controlled behavioral study measuring outcomes with and without the harness. The scripts enforce what they can compute; the rest is guidance an agent can still get wrong. Treat effectiveness claims accordingly.
@@ -358,9 +358,10 @@ Deliberately deferred as fleet-scale overkill: proactive scope partitioning, mer
 - **Industry-specific:** Edit `01-governance-gates.md` to add domain-specific gate criteria (HIPAA, SOC2, PCI-DSS, etc.)
 - **Team-specific:** Edit `02-personas.md` to rename personas, define Domain Expert Personas, or adjust responsibilities
 - **Standards:** Edit `03-coding-standards.md` to match your tech stack's conventions
-- **Lighter governance:** Use the Express track for small changes rather than deleting gates. If you do trim, keep G0, G4, and G6, and keep the authority rule and B-Team independence in `00-welcome.md`
+- **Lighter governance:** you do not pick a mode. Work starts with no process; it is added when the work trips a wire (real data, the protected branch, a sensitive path). List your own sensitive paths in `.codifide/sensitive-paths` rather than deleting gates. See "Tripwires and depth" in `01-governance-gates.md`. If you do trim, keep G0, G4, and G6, and keep the authority rule and B-Team independence in `00-welcome.md`
 - **Loop tuning:** Edit `08-loop-engineering.md` to adjust retry limits, Cost Class budgets, or verifier requirements
 - **Immutable paths:** Edit `.codifide/immutable-paths` (human-owned) to protect your verifiers, fixtures, and baselines
+- **Sensitive paths:** Edit `.codifide/sensitive-paths` (human-owned) to list the places where a mistake hurts; a change that touches one is raised to the highest review level in CI
 - **Intent integrity:** Edit `12-intent-integrity.md` and `templates/INTENT-CONTRACT.md` to define harm boundaries, escalation rules, and authority constraints
 - **Domain-specific reviews:** Create tailored B-Team prompts for your platform (see `04-adversarial-review.md` for examples)
 - **Existing projects:** Use `templates/EXISTING-PROJECT-ASSESSMENT.md` to assess where you stand before applying gates

@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT
+# Test workflow for the Codifide Harness repository itself: runs both suites on every pull request
+# and on pushes to trunk, so a change to the harness is checked by the harness's own tests.
+#
+# Kept as small as the release workflow: no third-party actions (the runner's own git is used, so
+# there is nothing to pin), no secrets, no pull_request_target, and a read-only token. On a pull
+# request from a fork this runs the fork's code with that read-only token, which is the normal
+# exposure for a public repository.
+#
+# It does not protect trunk by itself: make `tests` a required status check in branch protection.
+name: tests
+on:
+  pull_request:
+  push:
+    branches: [trunk]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the commit under test with git
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin "${SHA}"
+          git checkout -q FETCH_HEAD
+          git remote remove origin
+      - name: Enforcement test suite
+        run: bash templates/enforcement/test-enforcement.sh
+      - name: Installer test suite
+        run: bash tests/test-installer.sh
